@@ -13,17 +13,35 @@ const Signup = () => {
     name: "",
     email: "",
     pass: "",
+    role: "",
   });
+  
+  
   const [errorMsg, setErrorMsg] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
 
-  const handleSubmission = () => {
-    if (!values.name || !values.email || !values.pass) {
+  const handleSubmission = async() => {
+    if (!values.name || !values.email || !values.pass || !values.role) {
       setErrorMsg("Fill all fields");
       return;
     }
     setErrorMsg("");
 
+    const{ name, email, pass, role } = values;
+    const res = await fetch("https://login-85aaf-default-rtdb.firebaseio.com/adi.json", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        pass,
+        role,
+
+      }),
+    });
+    
     setSubmitButtonDisabled(true);
     createUserWithEmailAndPassword(auth, values.email, values.pass) //function provided by fire base
       .then(async (res) => {
@@ -64,6 +82,13 @@ const Signup = () => {
           placeholder="Enter password"
           onChange={(event) =>
             setValues((prev) => ({ ...prev, pass: event.target.value }))
+          }
+        />
+        <InputControl
+          label="Role"
+          placeholder="Enter your role"
+          onChange={(event) =>
+            setValues((prev) => ({ ...prev, role: event.target.value }))
           }
         />
 
