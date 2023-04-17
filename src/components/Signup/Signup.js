@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-
+import firebase from "firebase/compat/app";
 import InputControl from "../InputControl/InputControl";
-import { auth } from "../../firebase";
-
+import { app, auth } from "../../firebase";
 import styles from "./Signup.module.css";
+import { getFirestore } from "firebase/firestore";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -15,33 +15,51 @@ const Signup = () => {
     pass: "",
     role: "",
   });
-  
-  
+
   const [errorMsg, setErrorMsg] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
 
-  const handleSubmission = async() => {
+  const handleSubmission = async (event) => {
     if (!values.name || !values.email || !values.pass || !values.role) {
       setErrorMsg("Fill all fields");
       return;
     }
     setErrorMsg("");
 
-    const{ name, email, pass, role } = values;
-    const res = await fetch("https://login-85aaf-default-rtdb.firebaseio.com/adi.json", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name,
-        email,
-        pass,
-        role,
+    const { name, email, pass, role } = values;
+    const res = await fetch(
+      "https://login-85aaf-default-rtdb.firebaseio.com/adi.json",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          pass,
+          role,
+        }),
+      }
+    );
 
-      }),
-    });
-    
+    // const db = firebase.firestore();
+
+    // event.preventDefault();
+    // db.collection("user")
+    //   .add({
+    //     name: event.value.name,
+    //     email: event.value.name,
+    //     role: event.value.role,
+    //   })
+    //   .then((docRef) => {
+    //     const docId = docRef.id;
+    //     console.log(docId);
+    //   })
+    //   .catch((err) => {
+    //     console.log("Error" + err.message);
+    //   });
+
     setSubmitButtonDisabled(true);
     createUserWithEmailAndPassword(auth, values.email, values.pass) //function provided by fire base
       .then(async (res) => {

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-
+import {db } from "../../firebase";
+import {onValue,ref} from "firebase/database";
 import InputControl from "../InputControl/InputControl";
 import { auth } from "../../firebase";
 
@@ -23,6 +24,28 @@ const Login = () => {
     }
     setErrorMsg("");
 
+    const starCountRef = ref(db, 'adi/', 'role');
+    onValue(starCountRef, (snapshot) => {
+      let data = snapshot.val();
+      //console.log(data);
+      for (const user of Object.values(data)) {
+        if (user.email === values.email) 
+        {
+          if (user.role === "police")
+          {
+          navigate("/police");
+          }else if(user.role==="forensic")
+          {
+            navigate("/forensic");
+        }else{
+          navigate("/judiciary");
+        }
+      }
+    }
+    });
+
+    
+
     setSubmitButtonDisabled(true);
     signInWithEmailAndPassword(auth, values.email, values.pass)
       .then(async (res) => {
@@ -35,6 +58,7 @@ const Login = () => {
         setErrorMsg(err.message);
       });
   };
+
   return (
     <div className={styles.container}>
       <div className={styles.innerBox}>
