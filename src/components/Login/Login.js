@@ -30,6 +30,7 @@ const Login = () => {
       //console.log(data);
       for (const user of Object.values(data)) {
         if (user.email === values.email) 
+        console.log(user.role);
         {
           if (user.role === "police")
           {
